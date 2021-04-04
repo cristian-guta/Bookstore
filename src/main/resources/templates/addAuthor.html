@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Author</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+</head>
+<body>
+<div class="container">
+    <h1>Add Author</h1>
+    <form th:object="${author}" th:action="@{/author/save}" action="#" method="post" class="form-horizontal">
+        <div>
+            <label> First Name:<input type="text" th:field="*{firstName}" class="form-control"/></label>
+            <p th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="alert alert-danger">First Name Error</p>
+        </div>
+
+        <div>
+            <label> Last Name:<input type="text" th:field="*{lastName}" class="form-control"/></label>
+            <p th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="alert alert-danger">Last Name Error</p>
+        </div>
+
+
+        <input type="submit" value="Save" class="btn btn-info"></input>
+    </form>
+</div>
+</body>
+</html>

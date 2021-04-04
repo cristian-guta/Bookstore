@@ -1,0 +1,86 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Book List</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+</head>
+<body th:style="|background-image:url(/images/openbook.jpeg);|" th:height="485" th:width="1140" >
+
+<div class="container">
+	<div class="col-md-4" style="padding-top: 30px">
+		<a href="/home" type="button" class="btn btn-light" style="color: #820000; font-size: larger ;font-weight: bold">BookStore</a>
+		<h3 th:inline="text">Welcome [[${#httpServletRequest.remoteUser}]]</h3>
+	</div>
+	<div class="col-md-4" style="padding-top:80px">
+		<form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">
+			<input type="submit" value="Log Out" class="btn btn-danger"/>
+		</form>
+	</div>
+<div  style="padding-top:80px">
+	<form sec:authorize="isAuthenticated()" th:action="@{/shoppingCart/shoppingCartList/page/1}" method="get">
+		<input type="submit" value="Shopping Cart" class="btn btn-success"/>
+	</form>
+</div>
+    <table class="table table-hover" style="font-weight: bold; color: #820000; font-size: medium">
+		<tr style="color: #693a42">
+			<th>BookID</th>
+			<th>Title</th>
+			<th>ISBN</th>
+			<th>PublicationDate</th>
+			<th>Category</th>
+			<th>Price</th>
+			<th>Authors</th>
+		    <th colspan="3"></th>
+		</tr>  
+    	<tr th:each = "book : ${books}">
+    		<td th:text="${book.id}"></td>
+			<td th:text="${book.bookInfo?.bookTitle}"> </td>
+			<td th:text="${book.bookInfo?.bookISBN}"> </td>
+			<td th:text="${book.bookInfo?.bookPublicationDate}"> </td>
+			<td th:text="${book.bookCategory?.bookCategoryDescription}"> </td>
+			<td th:text="${book.price}"> </td>
+			<td>
+				<p th:each="author : ${book.authors}"
+				   th:text="${author.lastName}"></p>
+			</td>
+
+			<td sec:authorize = "isAuthenticated()"><a th:href="@{|/shoppingCart/add/${book.id}|}" class="btn btn-success">Add To Shopping Cart</a></td>
+ 			<td sec:authorize="hasRole('ADMIN')"><a th:href="@{|/book/delete/${book.id}|}" class="btn btn-danger">Delete</a></td>
+ 			<td sec:authorize="hasRole('ADMIN')"><a class="btn btn-info" th:href="@{|/book/edit/${book.id}|}">Edit</a></td>
+
+		<!---	<td><a th:href="@{|/book/update/${book.id}|}" type="button" class="btn btn-info">Edit</a></td>
+-->
+    	</tr>
+
+     </table>
+		<div sec:authorize="hasRole('ADMIN')">
+			<a href="/book/add" type="button" class="btn btn-success" >Add Book</a>
+		</div>
+
+
+	<div class="row" th:fragment="pagination">
+		<div class="col-md-2"></div>
+		<div class="col-md-8">
+			<nav aria-label="Pagination">
+				<ul class="pagination justify-content-center">
+					<li class="page-item" th:each="pageNumber : ${pageNumbers}" >
+						<a class="page-link" th:href="@{|/book/bookList/page/${pageNumber}|}" th:text="${pageNumber}"></a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+		<div class="col-md-2"></div>
+	</div>
+
+
+<!-- th:href="@{|/edit/{id}(id=${book.id})|}" -->
+		
+
+		
+
+</div>
+</body>
+</html>
