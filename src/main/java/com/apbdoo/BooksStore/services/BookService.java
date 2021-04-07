@@ -3,7 +3,10 @@ package com.apbdoo.BooksStore.services;
 
 import com.apbdoo.BooksStore.dto.BookDTO;
 import com.apbdoo.BooksStore.dto.ResultDTO;
-import com.apbdoo.BooksStore.models.*;
+import com.apbdoo.BooksStore.models.Author;
+import com.apbdoo.BooksStore.models.Book;
+import com.apbdoo.BooksStore.models.BookCategory;
+import com.apbdoo.BooksStore.models.BookInfo;
 import com.apbdoo.BooksStore.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 
 
 @Service
@@ -78,7 +80,7 @@ public class BookService {
         );
 
 
-        ArrayList<Integer> bookIds = new ArrayList<Integer>();
+        ArrayList<Integer> bookIds = new ArrayList<>();
         bookIds.add(1);
         bookIds.add(4);
         seedBook(
@@ -92,38 +94,36 @@ public class BookService {
 
     private void seedBook(Double price, BookInfo bookInfo, BookCategory bookCategory, List<Author> authors) {
         Book book = bookRepository.findByPriceAndBookInfoAndBookCategory(
-            price, bookInfo, bookCategory
+                price, bookInfo, bookCategory
         );
         if (book == null) {
             Book newBook = new Book()
-                .setPrice(price)
-                .setBookInfo(bookInfo)
-                .setBookCategory(bookCategory)
-                .setAuthors(authors);
+                    .setPrice(price)
+                    .setBookInfo(bookInfo)
+                    .setBookCategory(bookCategory)
+                    .setAuthors(authors);
             bookRepository.save(newBook);
         }
     }
 
-    public BookDTO getBook (String title){
+    public BookDTO getBook(String title) {
         BookInfo bookInfo = bookInfoRepository.findByBookTitle(title);
         Book book = bookRepository.findByBookInfo(bookInfo);
         return new BookDTO(book);
     }
 
-    public List<BookDTO> getAllBooksByCategory (BookCategory bookCategory){
+    public List<BookDTO> getAllBooksByCategory(BookCategory bookCategory) {
         List<Book> listOfBooks = bookRepository.findByBookCategory(bookCategory);
         List<BookDTO> listOfAllBooks = new ArrayList<>();
-        for(int i = 0; i < listOfBooks.size(); i++)
-            listOfAllBooks.add(new BookDTO(listOfBooks.get(i)));
+        for (Book listOfBook : listOfBooks) listOfAllBooks.add(new BookDTO(listOfBook));
         return listOfAllBooks;
     }
 
 
-    public List<BookDTO> getBooksByAuthor (Author author){
+    public List<BookDTO> getBooksByAuthor(Author author) {
         List<Book> listOfBooks = bookRepository.findByAuthors(author);
         List<BookDTO> listOfAllBooks = new ArrayList<>();
-        for(int i = 0; i < listOfBooks.size(); i++)
-            listOfAllBooks.add(new BookDTO(listOfBooks.get(i)));
+        for (Book listOfBook : listOfBooks) listOfAllBooks.add(new BookDTO(listOfBook));
         return listOfAllBooks;
     }
 
@@ -142,7 +142,8 @@ public class BookService {
         updatedBook
                 .setPrice(book.getPrice())
                 .setBookInfo(book.getBookInfo())
-                .setBookCategory(book.getBookCategory());
+                .setBookCategory(book.getBookCategory())
+                .setAuthors(book.getAuthors());
         bookRepository.save(updatedBook);
         return new BookDTO(updatedBook);
     }

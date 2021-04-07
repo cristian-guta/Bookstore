@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -16,14 +13,14 @@ import javax.validation.constraints.NotNull;
 @Setter
 @AllArgsConstructor
 @Accessors(chain = true)
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue
-    @Column(name="id", nullable=false,updatable=false)
+    @Column(name = "id", nullable = false, updatable = false)
     private int id;
 
-    //Unique username
-    @Column(name="username", nullable=false,unique=true)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
     @Column(name = "password", nullable = false)

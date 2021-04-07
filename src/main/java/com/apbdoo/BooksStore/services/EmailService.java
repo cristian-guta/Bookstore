@@ -1,6 +1,9 @@
 package com.apbdoo.BooksStore.services;
 
-import com.apbdoo.BooksStore.models.*;
+import com.apbdoo.BooksStore.models.Book;
+import com.apbdoo.BooksStore.models.BookInfo;
+import com.apbdoo.BooksStore.models.ShoppingCart;
+import com.apbdoo.BooksStore.models.User;
 import com.apbdoo.BooksStore.repositories.BookInfoRepository;
 import com.apbdoo.BooksStore.repositories.OrderRepository;
 import com.apbdoo.BooksStore.repositories.ShoppingCartRepository;
@@ -24,33 +27,27 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.Principal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class EmailService {
 
     public static final String DEST = "results/facturi/factura.pdf";
-    private SenderService senderService;
     private UserRepository userRepository;
     private OrderRepository orderRepository;
     private BookInfoRepository bookInfoRepository;
     private ShoppingCartRepository shoppingCartRepository;
 
     @Autowired
-    public EmailService(SenderService senderService, UserRepository userRepository,
+    public EmailService(UserRepository userRepository,
                         OrderRepository orderRepository, BookInfoRepository bookInfoRepository,
                         ShoppingCartRepository shoppingCartRepository) {
-        this.senderService = senderService;
         this.userRepository = userRepository;
         this.orderRepository = orderRepository;
         this.bookInfoRepository = bookInfoRepository;
         this.shoppingCartRepository = shoppingCartRepository;
     }
 
-
-
-    public void createPDF(List<Book> listOfBooks, Principal principal) throws IOException {
+    public void createPDF(Principal principal) throws IOException {
         File file = new File(DEST);
         file.getParentFile().mkdirs();
 
@@ -64,31 +61,20 @@ public class EmailService {
         Document document = new Document(pdf);
         Text text = new Text("BooksStore");
 
-
         text.setFont(font);
         text.setFontColor(Color.BLUE);
-
-
 
         Paragraph paragraph1 = new Paragraph();
         paragraph1.add(text);
         document.add(paragraph1);
 
         User user = userRepository.findByUsername(principal.getName());
-        Order order = orderRepository.findByUserIdAndOrderDate(user.getId(), LocalDate.now());
-
-        List<ShoppingCart> shoppingCarts = new ArrayList<ShoppingCart>();
-        for (Book book : order.getBooks()) {
-            shoppingCarts.addAll(shoppingCartRepository.findByUserIdAndBook(user.getId(), book));
-        }
-        //ShoppingCart shoppingCart = shoppingCartRepository.findByUserIdAndBook(user.getId(),order.getBooks());
-
 
         document.add(new Paragraph("Buna ziua,"));
         document.add(new Paragraph("Va multumim pentru interesul acordat platformei BooksStore."));
-        document.add(new Paragraph("Comanda dumneavoastra a fost inregistrata cu succes. Mai jos aveti detaliile acesteia. "  ));
-        document.add(new Paragraph ("Cu drag, "));
-        document.add(new Paragraph ("Echipa BooksStore "));
+        document.add(new Paragraph("Comanda dumneavoastra a fost inregistrata cu succes. Mai jos aveti detaliile acesteia. "));
+        document.add(new Paragraph("Cu drag, "));
+        document.add(new Paragraph("Echipa BooksStore "));
 
         Table table = new Table(5);
         table.addCell(new Cell().add("Nr Crt"));
@@ -97,7 +83,8 @@ public class EmailService {
         table.addCell(new Cell().add("Pret"));
         table.addCell(new Cell().add("Pretul Total"));
         int i = 1;
-        for (Book book : listOfBooks) {
+        ShoppingCart shoppingCart = shoppingCartRepository.findByUserId(user.getId());
+        for (Book book : shoppingCart.getBooks()) {
             BookInfo bookInfo = bookInfoRepository.findById(book.getId()).get();
             table.addCell(new Cell().add("" + i));
             table.addCell(new Cell().add(bookInfo.getBookTitle()));
@@ -106,7 +93,6 @@ public class EmailService {
             //table.addCell(new Cell().add(" " + shoppingCart.getQuantity() * book.getPrice()));
             i++;
         }
-
 
         document.add(table);
 
@@ -126,7 +112,7 @@ public class EmailService {
 
         document.close();
 
-        senderService.sendMail(DEST, user.getEmail(), user.getFirstName() + " " + user.getLastName());
+        SenderService.sendMail(DEST, user.getEmail(), user.getFirstName() + " " + user.getLastName());
 
     }
 

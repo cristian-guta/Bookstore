@@ -7,7 +7,6 @@ import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.lang.reflect.Array;
 import java.util.List;
 
 @Data
@@ -28,19 +27,11 @@ public class ShoppingCart {
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
-/*
+
     @ManyToMany(cascade = CascadeType.REMOVE)
     @JoinTable(name = "shopping_books", joinColumns = {
             @JoinColumn(name = "shoppingcart_id")}, inverseJoinColumns = {
             @JoinColumn(name = "book_id")
     })
     private List<Book> books;
-
-    public void removeBook(Book book) {
-        books.remove(book);
-    }
- */
-    @ManyToOne
-    @JoinColumn(name = "book_id")
-    private Book book;
 }

@@ -28,6 +28,18 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-envers</artifactId>
+			<version>5.4.23.Final</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>5.4.23.Final</version>
+		</dependency>
+
+		<dependency>
 			<groupId>com.itextpdf</groupId>
 			<artifactId>layout</artifactId>
 			<version>7.0.0</version>

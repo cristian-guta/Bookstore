@@ -25,13 +25,16 @@ public class ShoppingCartService {
     private BookService bookService;
     private BookRepository bookRepository;
     private UserRepository userRepository;
+    private OrderService orderService;
 
     @Autowired
-    public ShoppingCartService(ShoppingCartRepository shoppingCartRepository, BookService bookService, BookRepository bookRepository, UserRepository userRepository) {
+    public ShoppingCartService(ShoppingCartRepository shoppingCartRepository, BookService bookService,
+                               BookRepository bookRepository, UserRepository userRepository, OrderService orderService) {
         this.shoppingCartRepository = shoppingCartRepository;
         this.bookService = bookService;
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
+        this.orderService = orderService;
     }
 
     public List<Book> getRandomElement(List<Book> list, int totalItems) {
@@ -46,12 +49,9 @@ public class ShoppingCartService {
     }
 
     private List<Book> randomizeBooks() {
-        List<Book> books = new ArrayList<>();
-        bookRepository.findAll().forEach(books::add);
 
-        return books;
+        return new ArrayList<>(bookRepository.findAll());
     }
-
 
 
     public void seedCarts() {
@@ -61,14 +61,17 @@ public class ShoppingCartService {
 
     private void seedCart(int id, int quantity, User user, Book book) {
         ShoppingCart shoppingCart = shoppingCartRepository.findById(id);
+        List<Book> books = new ArrayList<>();
         if (shoppingCart == null) {
-            shoppingCart = new ShoppingCart().setId(id).setQuantity(quantity).setUser(user).setBook(book);
+            shoppingCart = new ShoppingCart().setId(id).setQuantity(quantity).setUser(user);
+            books.add(book);
+            shoppingCart.setBooks(books);
             shoppingCartRepository.save(shoppingCart);
         }
     }
 
 
-   /* public ShoppingCart addToShoppingCart(@RequestBody BookDTO book, Principal principal) {
+    public ShoppingCart addToShoppingCart(@RequestBody BookDTO book, Principal principal) {
         Book bok = new Book();
         bok.setId(book.getId())
                 .setBookCategory(book.getBookCategory())
@@ -84,7 +87,7 @@ public class ShoppingCartService {
         shoppingCartRepository.save(shoppingCart);
         return shoppingCart;
     }
-
+/*
     public ResultDTO removeFromShoppingCart(@PathVariable("id") int id, Principal principal) {
         User user = userRepository.findByUsername(principal.getName());
         ShoppingCart shoppingCart = shoppingCartRepository.findByUserId(user.getId());
@@ -98,36 +101,31 @@ public class ShoppingCartService {
 
     public ResultDTO removeFromShoppingCart(@PathVariable("id") int id, Principal principal) {
         User user = userRepository.findByUsername(principal.getName());
-        Book book = bookRepository.findById(id);
-        List<ShoppingCart> shoppingCarts = shoppingCartRepository.findByUserIdAndBook(user.getId(), book);
-
-        shoppingCartRepository.deleteAll(shoppingCarts);
+        ShoppingCart shoppingCart = shoppingCartRepository.findByUserId(user.getId());
+        shoppingCart.setBooks(null);
+        shoppingCartRepository.save(shoppingCart);
         return new ResultDTO().setType("success").setMessage("Book removed from cart.");
     }
 
-    public List<ShoppingCart> getShoppingCarts(Principal principal) {
+    public ShoppingCart getShoppingCarts(Principal principal) {
         User user = userRepository.findByUsername(principal.getName());
-        List<ShoppingCart> shoppingCarts = shoppingCartRepository.findByUserId(user.getId());
-        return shoppingCarts;
+        return shoppingCartRepository.findByUserId(user.getId());
     }
 
     public List<Book> getBooksFromShoppingCart(Principal principal) {
         User user = userRepository.findByUsername(principal.getName());
-        List<ShoppingCart> shoppingCarts = shoppingCartRepository.findByUserId(user.getId());
-        List<Book> books = new ArrayList<Book>();
-        for (ShoppingCart shoppingCart : shoppingCarts)
-            books.add(shoppingCart.getBook());
-        return books;
-//        return shoppingCartRepository.findByUserId(user.getId());
+        ShoppingCart shoppingCart = shoppingCartRepository.findByUserId(user.getId());
+        return new ArrayList<>(shoppingCart.getBooks());
     }
 
-    public ResultDTO deleteShoppingCart(int id, Principal principal) {
+    public ResultDTO deleteFromShoppingCart(int id, Principal principal) {
         Book book = bookRepository.findById(id);
-        bookRepository.delete(book);
         User user = userRepository.findByUsername(principal.getName());
-        List<ShoppingCart> shoppingCarts = shoppingCartRepository.findByUserUsernameAndBook(user.getUsername(),book);
-        for (ShoppingCart shoppingCart : shoppingCarts)
-            shoppingCartRepository.delete(shoppingCart);
+        ShoppingCart shoppingCart = shoppingCartRepository.findByUserUsername(user.getUsername());
+        List<Book> books = shoppingCart.getBooks();
+        books.remove(book);
+        shoppingCart.setBooks(books);
+        shoppingCartRepository.save(shoppingCart);
         return new ResultDTO().setType("success").setMessage("Book deleted.");
     }
 }

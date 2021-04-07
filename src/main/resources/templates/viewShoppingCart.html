@@ -28,19 +28,19 @@
             <th>Unit Price</th>
             <th colspan="2"></th>
         </tr>
-        <tr th:each = "shoppingCart: ${shoppingCarts}">
-            <td th:text="${shoppingCart.book.id}"></td>
-            <td th:text="${shoppingCart.book.bookInfo?.bookTitle}"> </td>
-            <td th:text="${shoppingCart.book.bookInfo?.bookISBN}"> </td>
-            <td th:text="${shoppingCart.book.bookInfo?.bookPublicationDate}"> </td>
-            <td th:text="${shoppingCart.book.bookCategory?.bookCategoryDescription}"> </td>
+        <tr th:each = "book: ${shoppingCart.getBooks()}">
+            <td th:text="${book.id}"></td>
+            <td th:text="${book.bookInfo?.bookTitle}"> </td>
+            <td th:text="${book.bookInfo?.bookISBN}"> </td>
+            <td th:text="${book.bookInfo?.bookPublicationDate}"> </td>
+            <td th:text="${book.bookCategory?.bookCategoryDescription}"> </td>
             <td>
-                <p th:each="author : ${shoppingCart.book.authors}"
+                <p th:each="author : ${book.authors}"
                    th:text="${author.lastName}"></p>
             </td>
             <td th:text="${shoppingCart.quantity}"> </td>
-            <td th:text="${shoppingCart.book.price}"> </td>
-            <td sec:authorize="isAuthenticated()"><a th:href="@{|/shoppingCart/delete/${shoppingCart.book.id}|}" class="btn btn-danger">Delete</a></td>
+            <td th:text="${book.price}"> </td>
+            <td sec:authorize="isAuthenticated()"><a th:href="@{|/shoppingCart/delete/${book.id}|}" class="btn btn-danger">Delete</a></td>
         </tr>
 
     </table>

@@ -1,6 +1,7 @@
 package com.apbdoo.BooksStore.services;
 
 import com.apbdoo.BooksStore.dto.AuthorDTO;
+import com.apbdoo.BooksStore.dto.ResultDTO;
 import com.apbdoo.BooksStore.models.Author;
 import com.apbdoo.BooksStore.models.Book;
 import com.apbdoo.BooksStore.models.BookInfo;
@@ -9,10 +10,10 @@ import com.apbdoo.BooksStore.repositories.BookInfoRepository;
 import com.apbdoo.BooksStore.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.apbdoo.BooksStore.dto.ResultDTO;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class AuthorService {
@@ -29,16 +30,16 @@ public class AuthorService {
     }
 
     public void seedAuthors() {
-        seedAuthor("Mircea","Eliade");
+        seedAuthor("Mircea", "Eliade");
         seedAuthor("Mihai", "Eminescu");
         seedAuthor("Camil", "Petrescu");
         seedAuthor("Horia", "Arama");
     }
 
-    public void seedAuthor(String firstName, String lastName){
+    public void seedAuthor(String firstName, String lastName) {
         Author author = authorRepository.findByFirstNameAndLastName(firstName, lastName);
         //List<Book> listOfBooks = bookRepository.findByAuthors(author);
-        if(author == null) {
+        if (author == null) {
             Author newAuthor = new Author().setFirstName(firstName).setLastName(lastName);//.setBooks(listOfBooks);
             authorRepository.save(newAuthor);
         }
@@ -81,7 +82,7 @@ public class AuthorService {
     }
 
 
-    public int numberOfAuthorsBook(String title){
+    public int numberOfAuthorsBook(String title) {
         BookInfo bookInfo = bookInfoRepository.findByBookTitle(title);
         Book book = bookRepository.findById(bookInfo.getId()).get();
         List<Author> authorsOfBook = authorRepository.findByBooks(book);
@@ -90,18 +91,10 @@ public class AuthorService {
 
     public ResultDTO deleteAuthor(int id) {
         Author deleteAuthor = authorRepository.findById(id);
-        List<Book> listOfBooks = bookRepository.findByAuthors(deleteAuthor);
-        List<Book> booksToDelete = new ArrayList<Book>();
-
-        for (Book book : listOfBooks) {
-            List<Author> authors = book.getAuthors();
-            if (authors.size() == 1)
-                booksToDelete.add(book);
+        for (Book book : deleteAuthor.getBooks()) {
+            bookRepository.delete(book);
         }
-
-
         authorRepository.delete(deleteAuthor);
-        bookRepository.deleteAll(booksToDelete);
 
         return new ResultDTO().setType("success").setMessage("Author deleted.");
     }

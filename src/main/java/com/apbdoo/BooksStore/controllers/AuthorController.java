@@ -59,8 +59,8 @@ public class AuthorController {
      }*/
 
   @RequestMapping(value ="authorList/page/{page}")
-  public String listAuthorsPageByPage(Model model, @PathVariable ("page") int pg) {
-      PageRequest pageable = PageRequest.of(pg - 1, 2, Sort.by("firstName"));
+  public String listAuthorsPageByPage(Model model, @PathVariable ("page") int page) {
+      PageRequest pageable = PageRequest.of(page - 1, 2, Sort.by("firstName"));
       Page<Author> authorPage = authorRepository.findAllPage(pageable);
       int totalPages = authorPage.getTotalPages();
       if(totalPages > 0) {
@@ -68,7 +68,7 @@ public class AuthorController {
           model.addAttribute("pageNumbers", pageNumbers);
       }
       model.addAttribute("activeAuthorList", true);
-      model.addAttribute("authors", authorPage.getContent());
+      model.addAttribute("authors", authorRepository.findAll());
       return "authorlist";
   }
 

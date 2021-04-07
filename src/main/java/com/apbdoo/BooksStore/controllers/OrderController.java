@@ -29,7 +29,7 @@ public class OrderController {
  */
 
     @GetMapping("/{id}")
-    public OrderDTO getOrderById(@PathVariable(value = "id") String id) throws IOException {
+    public OrderDTO getOrderById(@PathVariable(value = "id") String id){
         return orderService.findOrderById(id);
     }
 
@@ -41,8 +41,7 @@ public class OrderController {
 
     @GetMapping("/viewCart")
     public String getAll(Principal principal, Model model) {
-        //System.out.print(shoppingCartService.getBooksFromShoppingCart(principal));
-        //model.addAttribute("booksFromShoppingCart", shoppingCartService.getBooksFromShoppingCart(principal));
+
         List<Order> orders= orderService.getAllOrders(principal);
         model.addAttribute("orders", orders);
         return "viewOrder";

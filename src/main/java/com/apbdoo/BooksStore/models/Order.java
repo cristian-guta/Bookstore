@@ -1,12 +1,10 @@
 package com.apbdoo.BooksStore.models;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import org.hibernate.annotations.*;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -14,12 +12,12 @@ import java.util.List;
 @Entity
 @Accessors(chain = true)
 @Table(name = "orders")
+@NoArgsConstructor
 public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
 
     @Column
     private Double totalPrice;
@@ -31,21 +29,12 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
-
-    @ManyToMany
+    @ManyToMany()
     @JoinTable(name = "order_books",
             joinColumns = {
                     @JoinColumn(name = "order_id")}, inverseJoinColumns = {
             @JoinColumn(name = "book_id")})
     private List<Book> books;
-
-    public void removeBook(Book book) {
-        books.remove(book);
-    }
-
-    public Order() {
-
-    }
 
     public Order(int id, Double totalPrice) {
         this.id = id;
