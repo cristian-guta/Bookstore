@@ -7,6 +7,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -27,7 +28,7 @@ public class UserDetailServiceImp implements UserDetailsService  {
     {   
     	User curruser = repository.findByUsername(username);
         UserDetails user = new org.springframework.security.core.userdetails.User(username, curruser.getPasswordHash(),
-        		AuthorityUtils.createAuthorityList(curruser.getEmail()));
+        		AuthorityUtils.createAuthorityList("ROLE_" + curruser.getEmail().toUpperCase()));
         return user;
     }
 } 

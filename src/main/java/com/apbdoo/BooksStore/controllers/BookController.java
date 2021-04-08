@@ -4,9 +4,11 @@ import com.apbdoo.BooksStore.dto.BookDTO;
 import com.apbdoo.BooksStore.models.Author;
 import com.apbdoo.BooksStore.models.Book;
 import com.apbdoo.BooksStore.models.BookCategory;
+import com.apbdoo.BooksStore.models.User;
 import com.apbdoo.BooksStore.repositories.AuthorRepository;
 import com.apbdoo.BooksStore.repositories.BookCategoryRepository;
 import com.apbdoo.BooksStore.repositories.BookRepository;
+import com.apbdoo.BooksStore.repositories.UserRepository;
 import com.apbdoo.BooksStore.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -31,14 +34,16 @@ public class BookController {
     private BookRepository bookRepository;
     private AuthorRepository authorRepository;
     private BookCategoryRepository bookCategoryRepository;
+    private UserRepository userRepository;
 
     @Autowired
     public BookController(BookService bookService, BookRepository bookRepository, AuthorRepository authorRepository,
-                          BookCategoryRepository bookCategoryRepository) {
+                          BookCategoryRepository bookCategoryRepository, UserRepository userRepository) {
         this.bookService = bookService;
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
         this.bookCategoryRepository = bookCategoryRepository;
+        this.userRepository = userRepository;
     }
 
     @RequestMapping(value = "/*")
@@ -60,7 +65,7 @@ public class BookController {
 
     @PreAuthorize("permitAll()")
     @RequestMapping(value = "bookList/page/{page}")
-    public String listBooksPageByPage(Model model, @PathVariable("page") int pg) {
+    public String listBooksPageByPage(Model model, @PathVariable("page") int pg, Principal principal) {
         PageRequest pageable = PageRequest.of(pg - 1, 2, Sort.by("id"));
         Page<Book> bookPage = bookRepository.findAllPage(pageable);
         int totalPages = bookPage.getTotalPages();
@@ -68,6 +73,10 @@ public class BookController {
             List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList());
             model.addAttribute("pageNumbers", pageNumbers);
         }
+        //TODO replace with userId
+//        User user = userRepository.findByUsername(principal.getName());
+        List<Integer> favouriteBookList = userRepository.getFavouriteBooks(1);
+        model.addAttribute("favouriteBookList", favouriteBookList);
         model.addAttribute("activeBookList", true);
         model.addAttribute("books", bookPage.getContent());
         return "booklist";
@@ -84,6 +93,24 @@ public class BookController {
         model.addAttribute("authors", authorRepository.findAll());
         model.addAttribute("bookCategories", bookCategoryRepository.findAll());
         return "addBook";
+    }
+
+    @GetMapping(value = "/addFavourite/{id}")
+    public String addBookToFavourite(@PathVariable("id") int id, Principal principal) {
+        Book book = bookRepository.getOne(id);
+        //TODO replace with userId
+//        User user = userRepository.findByUsername(principal.getName());
+        userRepository.addFavouriteBook(1, book.getId());
+        return "redirect:/book/bookList/page/1";
+    }
+
+    @GetMapping(value = "/removeFavourite/{id}")
+    public String removeBookFromFavourite(@PathVariable("id") int id, Principal principal) {
+        Book book = bookRepository.getOne(id);
+        //TODO replace with userId
+//        User user = userRepository.findByUsername(principal.getName());
+        userRepository.deleteFavouriteBook(1, book.getId());
+        return "redirect:/book/bookList/page/1";
     }
 
     @RequestMapping(value = "/403")
