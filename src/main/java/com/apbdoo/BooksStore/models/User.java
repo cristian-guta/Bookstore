@@ -1,12 +1,14 @@
 package com.apbdoo.BooksStore.models;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Entity
 @Getter
@@ -40,6 +42,9 @@ public class User {
 
     @Column(name = "last_name")
     private String lastName;
+
+    @ManyToMany
+    private List<Book> favouriteBooks;
 
     @NotNull
     @Column(name = "status")
