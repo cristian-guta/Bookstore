@@ -30,7 +30,7 @@ public class UserService {
 
     public void seedUsers() {
       //  seedUser("admin", "password", "Bianca", " Barcan", "bianca.barcan40@gmail.com","Adresa 1",false, "admin");
-        seedUser("user", "$2y$12$hLLwaGyNBpGGxebalo746.7t//IhXE8p.dnPv6OmiWJhh2jNGUGy2", " ", " ", "gutacristian98@gmail.com", "Adresa 2",false, "user");
+        seedUser("user", "$2y$12$hLLwaGyNBpGGxebalo746.7t//IhXE8p.dnPv6OmiWJhh2jNGUGy2", " ", " ", "gutacristian98@gmail.com", "Adresa 2",false, "USER");
         seedUser("ADMIN", hashPwd, "Irina", "Branoiu", "email", " ", false, "ADMIN");
     }
 
@@ -45,7 +45,7 @@ public class UserService {
                     .setLastName(lastName)
                     .setAddress(address)
                     .setDeactivated(deactivated)
-                    .setRole(role);
+                    .setRole("USER");
             userRepository.save(user);
         }
     }

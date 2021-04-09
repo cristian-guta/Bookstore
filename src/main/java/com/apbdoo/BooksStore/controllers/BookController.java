@@ -17,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -60,7 +61,7 @@ public class BookController {
 
     @PreAuthorize("permitAll()")
     @RequestMapping(value = "bookList/page/{page}")
-    public String listBooksPageByPage(Model model, @PathVariable("page") int pg) {
+    public String listBooksPageByPage(Model model, @PathVariable("page") int pg, Principal principal) {
         PageRequest pageable = PageRequest.of(pg - 1, 2, Sort.by("id"));
         Page<Book> bookPage = bookRepository.findAllPage(pageable);
         int totalPages = bookPage.getTotalPages();
