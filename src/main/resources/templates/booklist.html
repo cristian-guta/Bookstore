@@ -49,6 +49,9 @@
                 <p th:each="author : ${book.authors}"
                    th:text="${author.lastName}"></p>
             </td>
+            <td sec:authorize = "isAuthenticated()"><a th:href="@{|/shoppingCart/add/${book.id}|}" class="btn btn-success">Add To Shopping Cart</a></td>
+            <td sec:authorize="hasRole('ADMIN')"><a th:href="@{|/book/delete/${book.id}|}" class="btn btn-danger">Delete</a></td>
+            <td sec:authorize="hasRole('ADMIN')"><a class="btn btn-info" th:href="@{|/book/edit/${book.id}|}">Edit</a></td>
             <td>
                 <div th:if="${favouriteBookList.contains(book.id)}">
                     <a th:href="@{|/book/removeFavourite/${book.id}|}" class="btn btn-success">Remove From Favourite</a>

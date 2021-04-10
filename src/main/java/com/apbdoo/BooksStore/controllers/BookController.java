@@ -26,7 +26,7 @@ import java.util.stream.IntStream;
 
 
 @Controller
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("isAuthenticated()")
 @RequestMapping("/book")
 public class BookController {
 
@@ -73,9 +73,8 @@ public class BookController {
             List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList());
             model.addAttribute("pageNumbers", pageNumbers);
         }
-        //TODO replace with userId
-//        User user = userRepository.findByUsername(principal.getName());
-        List<Integer> favouriteBookList = userRepository.getFavouriteBooks(1);
+        User user = userRepository.findByUsername(principal.getName());
+        List<Integer> favouriteBookList = userRepository.getFavouriteBooks(user.getId());
         model.addAttribute("favouriteBookList", favouriteBookList);
         model.addAttribute("activeBookList", true);
         model.addAttribute("books", bookPage.getContent());
@@ -98,18 +97,16 @@ public class BookController {
     @GetMapping(value = "/addFavourite/{id}")
     public String addBookToFavourite(@PathVariable("id") int id, Principal principal) {
         Book book = bookRepository.getOne(id);
-        //TODO replace with userId
-//        User user = userRepository.findByUsername(principal.getName());
-        userRepository.addFavouriteBook(1, book.getId());
+        User user = userRepository.findByUsername(principal.getName());
+        userRepository.addFavouriteBook(user.getId(), book.getId());
         return "redirect:/book/bookList/page/1";
     }
 
     @GetMapping(value = "/removeFavourite/{id}")
     public String removeBookFromFavourite(@PathVariable("id") int id, Principal principal) {
         Book book = bookRepository.getOne(id);
-        //TODO replace with userId
-//        User user = userRepository.findByUsername(principal.getName());
-        userRepository.deleteFavouriteBook(1, book.getId());
+        User user = userRepository.findByUsername(principal.getName());
+        userRepository.deleteFavouriteBook(user.getId(), book.getId());
         return "redirect:/book/bookList/page/1";
     }
 
