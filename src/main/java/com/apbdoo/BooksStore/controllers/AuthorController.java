@@ -39,13 +39,6 @@ public class AuthorController {
     }
 
 
-  /*  @RequestMapping(value="/authorList")
-    public String authorList(Model model){
-        model.addAttribute("authors", authorRepository.findAll());
-        return "authorlist";
-    }*/
-
-
    /* @GetMapping(path = "/authorList/page/1")
      public String loadAuthorssPage(Model model,
              @PageableDefault(page = 1, size = 2)
