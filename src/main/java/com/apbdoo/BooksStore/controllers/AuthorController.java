@@ -58,7 +58,7 @@ public class AuthorController {
          return "authorlist";
      }*/
 
-  @RequestMapping(value ="authorList/page/{page}")
+  @RequestMapping(value ="/authorList/page/{page}")
   public String listAuthorsPageByPage(Model model, @PathVariable ("page") int page) {
       PageRequest pageable = PageRequest.of(page - 1, 2, Sort.by("firstName"));
       Page<Author> authorPage = authorRepository.findAllPage(pageable);
@@ -67,12 +67,12 @@ public class AuthorController {
           List<Integer> pageNumbers = IntStream.rangeClosed(1,totalPages).boxed().collect(Collectors.toList());
           model.addAttribute("pageNumbers", pageNumbers);
       }
+
       model.addAttribute("activeAuthorList", true);
-      model.addAttribute("authors", authorRepository.findAll());
+      model.addAttribute("authors", authorPage.getContent());
       return "authorlist";
   }
 
-    //Add a new author
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value="authorList/add",method=RequestMethod.GET)
     public String addAuthor(Model model){
