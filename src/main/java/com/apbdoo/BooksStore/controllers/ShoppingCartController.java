@@ -58,12 +58,6 @@ public class ShoppingCartController {
         return "viewShoppingCart";
     }*/
 
-  /*  @PreAuthorize("permitAll()")
-    @RequestMapping(value="/shoppingCartList")
-    public String shoppingCartList(Model model){
-        model.addAttribute("shoppingCarts", shoppingCartRepository.findAll());
-        return "viewShoppingCart";
-    }*/
 
     @PreAuthorize("isAuthenticated()")
     @RequestMapping(value = "shoppingCartList/page/{page}")
